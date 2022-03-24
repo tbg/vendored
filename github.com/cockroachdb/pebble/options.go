@@ -56,7 +56,7 @@ type TablePropertyCollector = sstable.TablePropertyCollector
 type BlockPropertyCollector = sstable.BlockPropertyCollector
 
 // BlockPropertyFilter exports the sstable.BlockPropertyFilter type.
-type BlockPropertyFilter = sstable.BlockPropertyFilter
+type BlockPropertyFilter = base.BlockPropertyFilter
 
 // IterKeyType configures which types of keys an iterator should surface.
 type IterKeyType int8
@@ -141,6 +141,9 @@ type IterOptions struct {
 	OnlyReadGuaranteedDurable bool
 	// Internal options.
 	logger Logger
+
+	// NB: If adding new Options, you must account for them in iterator
+	// construction and Iterator.SetOptions.
 }
 
 // GetLowerBound returns the LowerBound or nil if the receiver is nil.
