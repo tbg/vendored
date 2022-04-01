@@ -854,9 +854,13 @@ func parseArgs(line []byte) (Args, error) {
 				arg := Arg{IsOffsetTooLarge: true}
 				cur.Values = append(cur.Values, arg)
 			default:
+				n := len(a)
+				if a[n-1] == '?' {
+					a = a[:n-1]
+				}
 				v, err := strconv.ParseUint(unsafeString(a), 0, 64)
 				if err != nil {
-					return Args{}, errors.New("failed to parse int")
+					return Args{}, errors.New(fmt.Sprintf("failed to parse int %s", unsafeString(a)))
 				}
 				// Assume the stack was generated with the same bitness (32 vs 64) as
 				// the code processing it.
@@ -883,9 +887,13 @@ func parseArgs(line []byte) (Args, error) {
 // Uses reFile.
 func parseFile(c *Call, line []byte) (bool, error) {
 	if match := reFile.FindSubmatch(line); match != nil {
+		if n := len(match[2]); n > 0 && match[2][n-1] == '?' {
+			match[2] = match[2][:n-1]
+		}
 		num, ok := atou(match[2])
 		if !ok {
-			return true, fmt.Errorf("failed to parse int on line: %q", bytes.TrimSpace(line))
+			panic("x")
+			return true, fmt.Errorf("failed to parse int %s on line: %q", match[2], bytes.TrimSpace(line))
 		}
 		c.init(string(match[1]), num)
 		return true, nil
